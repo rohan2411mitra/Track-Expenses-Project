@@ -1,0 +1,340 @@
+import 'package:flutter/material.dart';
+import 'package:track_exp/screens/home_screen.dart';
+import '../../utils/color_utils.dart';
+import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class AddExpenses extends StatefulWidget {
+  const AddExpenses({Key? key}) : super(key: key);
+
+  @override
+  State<AddExpenses> createState() => _AddExpensesState();
+}
+
+class _AddExpensesState extends State<AddExpenses> {
+  final _amountController = TextEditingController();
+  final _noteController = TextEditingController();
+  final categories = ["Personal", "Business", "Food"];
+  final methods = ["Cash", "Card", "Online"];
+  String _selectedCategory = "Food";
+  String _selectedMethod = "Cash";
+  String _type = "Income";
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        body: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+              hexStringToColor("333333"),
+              hexStringToColor("444444"),
+              hexStringToColor("555555")
+            ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+            child: SingleChildScrollView(
+              child: SizedBox(
+                height: 590,
+                child: Stack(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: 180,
+                      decoration: const BoxDecoration(
+                          color: Colors.deepOrange,
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(20),
+                              bottomRight: Radius.circular(20))),
+                      padding: const EdgeInsets.all(10.0),
+                      child: const Center(
+                        child: Text(
+                          "Add Your Expense",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 32.0,
+                              color: Colors.white70),
+                        ),
+                      ),
+                    ),
+                    Positioned(top: 135, left: 14, child: form()),
+                  ],
+                ),
+              ),
+            )),
+      ),
+    );
+  }
+
+  //Input Fields
+  Widget form() {
+    return Container(
+      width: 365,
+      height: 435,
+      decoration: BoxDecoration(
+          color: Colors.pink, borderRadius: BorderRadius.circular(14)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Amount:',
+                  style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+                SizedBox(
+                  width: 180,
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Enter Amount',
+                      hintStyle: TextStyle(color: Colors.white60),
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _amountController,
+                    style: const TextStyle(fontSize: 20.0, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Type:',
+                  style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+                SizedBox(
+                    width: 210,
+                    child: Column(
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RadioListTile(
+                          value: "Income",
+                          groupValue: _type,
+                          title: const Text(
+                            "Income",
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _type = value.toString();
+                            });
+                          },
+                        ),
+                        RadioListTile(
+                          value: "Expense",
+                          groupValue: _type,
+                          title: const Text(
+                            "Expense",
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _type = value.toString();
+                            });
+                          },
+                        ),
+                      ],
+                    )),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Note:',
+                  style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+                SizedBox(
+                  width: 180,
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Enter Note',
+                      hintStyle: TextStyle(color: Colors.white60),
+                    ),
+                    cursorColor: Colors.white,
+                    controller: _noteController,
+                    style: const TextStyle(fontSize: 20.0, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Date:',
+                  style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+                SizedBox(
+                    width: 180,
+                    child: TextField(
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: DateFormat('dd/MM/yyyy').format(DateTime.now().toLocal()),
+                          hintStyle: const TextStyle(color: Colors.white)),
+                      enabled: false,
+                      style:
+                      const TextStyle(fontSize: 20.0, color: Colors.white),
+                    )),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Category:',
+                  style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+                SizedBox(
+                  width: 190,
+                  child: DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                    ),
+                    value: _selectedCategory,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedCategory = value!;
+                      });
+                    },
+                    dropdownColor: Colors.black,
+                    items: categories.map((category) {
+                      return DropdownMenuItem(
+                        value: category,
+                        child: Text(
+                          category,
+                          style: const TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Payment By:',
+                  style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+                SizedBox(
+                  width: 190,
+                  child: DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                    ),
+                    value: _selectedMethod,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedMethod = value!;
+                      });
+                    },
+                    dropdownColor: Colors.black,
+                    items: methods.map((method) {
+                      return DropdownMenuItem(
+                        value: method,
+                        child: Text(
+                          method,
+                          style: const TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 5),
+            ElevatedButton.icon(
+              onPressed: () {
+                addUserExpense(
+                  double.parse(_amountController.text),
+                  _type,
+                  _noteController.text.trim(),
+                  _selectedCategory,
+                  _selectedMethod
+                );
+              },
+              icon: const Icon(Icons.check),
+              label: const Text("Confirm"),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  textStyle: const TextStyle(color: Colors.white70)),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  //Add data to Firebase function
+  Future<void> addUserExpense(double amount, String type, String note,
+      String category, String method) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    String? uid = user?.uid;
+
+    if (user == null || uid == null) {
+      return;
+    }
+
+    // Create a new document with the user ID as the document ID
+    DocumentReference expensesRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('expenses').doc();
+
+    // Set the data for the document
+    await expensesRef.set({
+      'Amount' : double.parse(amount.toStringAsFixed(2)),
+      'Payment_Type' : type,
+      'Date' : DateTime.now(),
+      'Note' : note,
+      'Category' : category,
+      'Pay_Method' : method
+    })
+        .then((value) {
+      DocumentReference balanceRef = FirebaseFirestore.instance.collection('users').doc(uid);
+      balanceRef.update({
+        'Income' : FieldValue.increment( (type=="Income") ? amount : 0),
+        'Expense' : FieldValue.increment( (type=="Expense") ? amount : 0),
+      });
+        Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+    });
+    print("Added Expense Data");
+  }
+}
