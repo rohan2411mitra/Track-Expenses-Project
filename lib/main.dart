@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:track_exp/screens/home_screen.dart';
 import 'package:track_exp/screens/signin_screen.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -31,20 +31,18 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState==ConnectionState.waiting){
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError){
-            return Center(child: Text("Something Went Wrong!"));
-          } else if (snapshot.hasData){
-            return HomeScreen();
-          } else {
-            return SignInScreen();
-          }
-        }
-      ),
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text("Something Went Wrong!"));
+            } else if (snapshot.hasData) {
+              return HomeScreen();
+            } else {
+              return SignInScreen();
+            }
+          }),
     );
   }
 }
-

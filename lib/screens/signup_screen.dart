@@ -10,7 +10,7 @@ class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
 
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
@@ -38,10 +38,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
-                hexStringToColor("333333"),
-                hexStringToColor("444444"),
-                hexStringToColor("555555")
-              ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+            hexStringToColor("333333"),
+            hexStringToColor("444444"),
+            hexStringToColor("555555")
+          ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
           child: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.fromLTRB(
@@ -54,13 +54,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-                    reusableTextField("Enter Username", Icons.person_outline, false,
-                        _userNameTextController, isName: true),
+                    reusableTextField("Enter Username", Icons.person_outline,
+                        false, _userNameTextController,
+                        isName: true),
                     const SizedBox(
                       height: 20,
                     ),
-                    reusableTextField("Enter Email Id", Icons.person_outline, false,
-                        _emailTextController),
+                    reusableTextField("Enter Email Id", Icons.person_outline,
+                        false, _emailTextController),
                     const SizedBox(
                       height: 20,
                     ),
@@ -76,40 +77,53 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       showDialog(
                           context: context,
                           barrierDismissible: false,
-                          builder: (context)=> Center(child: CircularProgressIndicator())
-                      );
+                          builder: (context) =>
+                              const Center(child: CircularProgressIndicator()));
 
-                      FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailTextController.text.trim(), password: _passwordTextController.text.trim())
+                      FirebaseAuth.instance
+                          .createUserWithEmailAndPassword(
+                              email: _emailTextController.text.trim(),
+                              password: _passwordTextController.text.trim())
                           .then((value) {
-                            value.user!.updateDisplayName(_userNameTextController.text.trim()).then((_) {
-                              DocumentReference userPayRef = FirebaseFirestore.instance.collection('users').doc(value.user!.uid);
-                              Map<String, dynamic> balance = {
-                                'Income' : 0,
-                                'Expense' : 0
-                              };
-                              userPayRef.set(balance).then((value) {
-                                print("Created New Account");
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
-                              }).catchError((error) {
-                                print("Error: ${error.toString()}");
-                              });
-                            }).catchError((error) {
-                              print("Error: ${error.toString()}");
-                            });
-                          }
-                      ).onError((error, stackTrace) {
+                        value.user!
+                            .updateDisplayName(
+                                _userNameTextController.text.trim())
+                            .then((_) {
+                          DocumentReference userPayRef = FirebaseFirestore
+                              .instance
+                              .collection('users')
+                              .doc(value.user!.uid);
+                          Map<String, dynamic> data = {
+                            'Income': 0,
+                            'Expense': 0,
+                            'joiningDate': DateTime.now(),
+                          };
+                          userPayRef.set(data).then((value) {
+                            print("Created New Account");
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const HomeScreen()));
+                          }).catchError((error) {
+                            print("Error: ${error.toString()}");
+                          });
+                        }).catchError((error) {
+                          print("Error: ${error.toString()}");
+                        });
+                      }).onError((error, stackTrace) {
                         String errorMessage = error.toString().split(']').last;
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(errorMessage, textAlign: TextAlign.center),
-                            duration: Duration(seconds: 5),
+                            content:
+                                Text(errorMessage, textAlign: TextAlign.center),
+                            duration: const Duration(seconds: 5),
                             backgroundColor: Colors.red,
                           ),
                         );
                         print("Error ${error.toString()}");
-                        navigatorKey.currentState!.popUntil((route)=>route.isFirst);
+                        navigatorKey.currentState!
+                            .popUntil((route) => route.isFirst);
                       });
-
                     })
                   ],
                 ),

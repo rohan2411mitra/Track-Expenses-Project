@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../reusable_widgets/chart.dart';
+import '../../reusable_widgets/reuse.dart';
 import '../../utils/color_utils.dart';
 
 class ShowExpenses extends StatefulWidget {
@@ -13,13 +13,13 @@ class ShowExpenses extends StatefulWidget {
 }
 
 class _ShowExpensesState extends State<ShowExpenses> {
-  List option = ['Category Wise','Payment Wise'];
-  int indexcolor = 0;
-  List catoption = ['Personal','Business','Food'];
-  int catindexcolor = 0;
-  List payoption = ['Cash','Card','Online'];
-  int payindexcolor = 0;
-  List sets = ['Category','Pay_Method'];
+  List option = ['Category Wise', 'Payment Wise'];
+  int indexColor = 0;
+  List catOption = ["Work", "Personal", "Transport", "Food"];
+  int catIndexColor = 0;
+  List payOption = ["Cash", "Card", "Online", "Bank"];
+  int payIndexColor = 0;
+  List sets = ['Category', 'Pay_Method'];
   String selectedButtonSet = "Category";
   final user = FirebaseAuth.instance.currentUser!;
   bool _descending = true;
@@ -71,18 +71,18 @@ class _ShowExpensesState extends State<ShowExpenses> {
                           return GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  indexcolor = index;
-                                  selectedButtonSet=sets[index];
-                                  payindexcolor=0;
-                                  catindexcolor=0;
+                                  indexColor = index;
+                                  selectedButtonSet = sets[index];
+                                  payIndexColor = 0;
+                                  catIndexColor = 0;
                                 });
                               },
                               child: Container(
-                                height: indexcolor == index ? 50 : 40,
-                                width: indexcolor == index ? 170 : 130,
+                                height: indexColor == index ? 50 : 40,
+                                width: indexColor == index ? 180 : 140,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
-                                  color: indexcolor == index
+                                  color: indexColor == index
                                       ? Colors.deepPurple
                                       : Colors.deepPurple.shade300,
                                 ),
@@ -91,8 +91,8 @@ class _ShowExpensesState extends State<ShowExpenses> {
                                   option[index],
                                   style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: indexcolor == index ? 18 : 16,
-                                      fontWeight: indexcolor == index
+                                      fontSize: indexColor == index ? 18 : 16,
+                                      fontWeight: indexColor == index
                                           ? FontWeight.w700
                                           : FontWeight.w500),
                                 ),
@@ -104,31 +104,38 @@ class _ShowExpensesState extends State<ShowExpenses> {
                   const SizedBox(
                     height: 10,
                   ),
-                  if (selectedButtonSet=="Category") categoryButtons() else paymentButtons(),
+                  if (selectedButtonSet == "Category")
+                    categoryButtons()
+                  else
+                    paymentButtons(),
                   const SizedBox(
                     height: 10,
                   ),
-                  Chart(method: sets[indexcolor], sortby: (indexcolor==0) ? catoption[catindexcolor] : payoption[payindexcolor]),
+                  Chart(
+                      method: sets[indexColor],
+                      sortBy: (indexColor == 0)
+                          ? catOption[catIndexColor]
+                          : payOption[payIndexColor]),
                   const SizedBox(
                     height: 8,
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    padding: const EdgeInsets.fromLTRB(15, 0, 8, 0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Top Amount',
+                          'Top 10 By Amount',
                           style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 20,
+                              color: Colors.white70),
                         ),
                         IconButton(
                           onPressed: _toggleSortOrder,
                           icon: const Icon(
                             Icons.swap_vert,
-                            size: 25,
+                            size: 26,
                             color: Color(0xFFFFFFCC),
                           ),
                         ),
@@ -137,101 +144,19 @@ class _ShowExpensesState extends State<ShowExpenses> {
                   ),
                   Expanded(
                     child: SizedBox(
-                      width: double.infinity,
-                      child: transactions()
-                    ),
+                        width: double.infinity,
+                        child: transactions(
+                            FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(user.uid)
+                                .collection('expenses'),
+                            "Amount",
+                            _descending)),
                   )
                 ],
               ),
             ])),
       ),
-    );
-  }
-
-  Widget transactions() {
-    final CollectionReference expenses = FirebaseFirestore.instance.collection('users').doc(user.uid).collection('expenses');
-    return StreamBuilder(
-      stream: expenses.orderBy('Amount', descending: _descending).snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(child: Text("Something Went Wrong! ${snapshot.error}"));
-        } else if (snapshot.hasData) {
-          final expenses = snapshot.data!;
-
-          if (expenses.docs.isEmpty){
-            return const Center(
-              child: Text(
-                "No Transaction added yet!",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-            );
-          }
-
-          else{
-            return ListView.builder(
-              itemCount: expenses.docs.length,
-              itemBuilder: (BuildContext context, int index) {
-                final DocumentSnapshot transaction = expenses.docs[index];
-
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: ListTile(
-
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                    textColor: Colors.black,
-                    leading: Image.asset(
-                        "assets/images/${transaction["Pay_Method"]}.png", height: 40),
-                    title: Text(
-                      transaction['Note'],
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'For ${transaction['Category']}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12
-                          ),
-                        ),
-                        Text(
-                          DateFormat('dd/MM/yyyy').format(transaction['Date'].toDate().toLocal()),
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                    trailing: Text(
-                      '\$ ${transaction["Amount"]}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 19,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            );
-          }
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
     );
   }
 
@@ -241,35 +166,35 @@ class _ShowExpensesState extends State<ShowExpenses> {
     });
   }
 
-  Widget categoryButtons(){
+  Widget categoryButtons() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          ...List.generate(3, (index) {
+          ...List.generate(4, (index) {
             return GestureDetector(
                 onTap: () {
                   setState(() {
-                    catindexcolor = index;
+                    catIndexColor = index;
                   });
                 },
                 child: Container(
-                  height: catindexcolor == index ? 40 : 30,
-                  width: catindexcolor == index ? 90 : 80,
+                  height: catIndexColor == index ? 40 : 30,
+                  width: catIndexColor == index ? 90 : 82,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: catindexcolor == index
+                    color: catIndexColor == index
                         ? Colors.indigo
                         : Colors.blueGrey,
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    catoption[index],
+                    catOption[index],
                     style: TextStyle(
                         color: Colors.white,
-                        fontSize: catindexcolor == index ? 16 : 14,
-                        fontWeight: catindexcolor == index
+                        fontSize: catIndexColor == index ? 16 : 14,
+                        fontWeight: catIndexColor == index
                             ? FontWeight.w700
                             : FontWeight.w500),
                   ),
@@ -280,35 +205,35 @@ class _ShowExpensesState extends State<ShowExpenses> {
     );
   }
 
-  Widget paymentButtons(){
+  Widget paymentButtons() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          ...List.generate(3, (index) {
+          ...List.generate(4, (index) {
             return GestureDetector(
                 onTap: () {
                   setState(() {
-                    payindexcolor = index;
+                    payIndexColor = index;
                   });
                 },
                 child: Container(
-                  height: payindexcolor == index ? 40 : 30,
-                  width: payindexcolor == index ? 90 : 80,
+                  height: payIndexColor == index ? 40 : 30,
+                  width: payIndexColor == index ? 90 : 80,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: payindexcolor == index
+                    color: payIndexColor == index
                         ? Colors.indigo
                         : Colors.blueGrey,
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    payoption[index],
+                    payOption[index],
                     style: TextStyle(
                         color: Colors.white,
-                        fontSize: payindexcolor == index ? 16 : 14,
-                        fontWeight: payindexcolor == index
+                        fontSize: payIndexColor == index ? 16 : 14,
+                        fontWeight: payIndexColor == index
                             ? FontWeight.w700
                             : FontWeight.w500),
                   ),
@@ -318,5 +243,4 @@ class _ShowExpensesState extends State<ShowExpenses> {
       ),
     );
   }
-
 }

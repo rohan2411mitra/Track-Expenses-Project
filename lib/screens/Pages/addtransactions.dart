@@ -5,19 +5,19 @@ import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AddExpenses extends StatefulWidget {
-  const AddExpenses({Key? key}) : super(key: key);
+class AddTransactions extends StatefulWidget {
+  const AddTransactions({Key? key}) : super(key: key);
 
   @override
-  State<AddExpenses> createState() => _AddExpensesState();
+  State<AddTransactions> createState() => _AddTransactionsState();
 }
 
-class _AddExpensesState extends State<AddExpenses> {
+class _AddTransactionsState extends State<AddTransactions> {
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
-  final categories = ["Personal", "Business", "Food"];
-  final methods = ["Cash", "Card", "Online"];
-  String _selectedCategory = "Food";
+  final categories = ["Work", "Personal", "Transport", "Food"];
+  final methods = ["Cash", "Card", "Online", "Bank"];
+  String _selectedCategory = "Work";
   String _selectedMethod = "Cash";
   String _type = "Income";
 
@@ -26,44 +26,46 @@ class _AddExpensesState extends State<AddExpenses> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        body: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-              hexStringToColor("333333"),
-              hexStringToColor("444444"),
-              hexStringToColor("555555")
-            ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-            child: SingleChildScrollView(
-              child: SizedBox(
-                height: 590,
-                child: Stack(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      height: 180,
-                      decoration: const BoxDecoration(
-                          color: Colors.deepOrange,
-                          borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(20),
-                              bottomRight: Radius.circular(20))),
-                      padding: const EdgeInsets.all(10.0),
-                      child: const Center(
-                        child: Text(
-                          "Add Your Expense",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 32.0,
-                              color: Colors.white70),
+        body: SafeArea(
+          child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [
+                hexStringToColor("333333"),
+                hexStringToColor("444444"),
+                hexStringToColor("555555")
+              ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+              child: SingleChildScrollView(
+                child: SizedBox(
+                  height: 590,
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 180,
+                        decoration: const BoxDecoration(
+                            color: Colors.deepOrange,
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(20),
+                                bottomRight: Radius.circular(20))),
+                        padding: const EdgeInsets.all(10.0),
+                        child: const Center(
+                          child: Text(
+                            "Add Your Transaction",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 32.0,
+                                color: Colors.white70),
+                          ),
                         ),
                       ),
-                    ),
-                    Positioned(top: 135, left: 14, child: form()),
-                  ],
+                      Positioned(top: 135, left: 14, child: form()),
+                    ],
+                  ),
                 ),
-              ),
-            )),
+              )),
+        ),
       ),
     );
   }
@@ -127,8 +129,7 @@ class _AddExpensesState extends State<AddExpenses> {
                           groupValue: _type,
                           title: const Text(
                             "Income",
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 20),
+                            style: TextStyle(color: Colors.white, fontSize: 20),
                           ),
                           onChanged: (value) {
                             setState(() {
@@ -141,8 +142,7 @@ class _AddExpensesState extends State<AddExpenses> {
                           groupValue: _type,
                           title: const Text(
                             "Expense",
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 20),
+                            style: TextStyle(color: Colors.white, fontSize: 20),
                           ),
                           onChanged: (value) {
                             setState(() {
@@ -194,11 +194,12 @@ class _AddExpensesState extends State<AddExpenses> {
                     child: TextField(
                       decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: DateFormat('dd/MM/yyyy').format(DateTime.now().toLocal()),
+                          hintText: DateFormat('dd/MM/yyyy')
+                              .format(DateTime.now().toLocal()),
                           hintStyle: const TextStyle(color: Colors.white)),
                       enabled: false,
                       style:
-                      const TextStyle(fontSize: 20.0, color: Colors.white),
+                          const TextStyle(fontSize: 20.0, color: Colors.white),
                     )),
               ],
             ),
@@ -285,12 +286,11 @@ class _AddExpensesState extends State<AddExpenses> {
             const SizedBox(height: 5),
             ElevatedButton.icon(
               onPressed: () {
-                addUserExpense(
-                  double.parse(_amountController.text),
-                  _type,
-                  _noteController.text.trim(),
-                  _selectedCategory,
-                  _selectedMethod
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return _buildAlertDialog(context);
+                  },
                 );
               },
               icon: const Icon(Icons.check),
@@ -305,6 +305,42 @@ class _AddExpensesState extends State<AddExpenses> {
     );
   }
 
+  //Alert Dialog Box
+  Widget _buildAlertDialog(BuildContext context) {
+    return AlertDialog(
+      title: Text('Add Transaction'),
+      content: Text(
+        'Are you sure you want to add the transaction ?',
+        style: TextStyle(fontSize: 20),
+      ),
+      actions: [
+        TextButton(
+          child: const Text(
+            'Cancel',
+            style: TextStyle(fontSize: 16),
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: const Text(
+            'Confirm',
+            style: TextStyle(fontSize: 16),
+          ),
+          onPressed: () {
+            addUserExpense(
+                double.parse(_amountController.text),
+                _type,
+                _noteController.text.trim(),
+                _selectedCategory,
+                _selectedMethod);
+          },
+        ),
+      ],
+    );
+  }
+
   //Add data to Firebase function
   Future<void> addUserExpense(double amount, String type, String note,
       String category, String method) async {
@@ -316,24 +352,29 @@ class _AddExpensesState extends State<AddExpenses> {
     }
 
     // Create a new document with the user ID as the document ID
-    DocumentReference expensesRef = FirebaseFirestore.instance.collection('users').doc(uid).collection('expenses').doc();
+    DocumentReference expensesRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('expenses')
+        .doc();
 
     // Set the data for the document
     await expensesRef.set({
-      'Amount' : double.parse(amount.toStringAsFixed(2)),
-      'Payment_Type' : type,
-      'Date' : DateTime.now(),
-      'Note' : note,
-      'Category' : category,
-      'Pay_Method' : method
-    })
-        .then((value) {
-      DocumentReference balanceRef = FirebaseFirestore.instance.collection('users').doc(uid);
+      'Amount': double.parse(amount.toStringAsFixed(2)),
+      'Payment_Type': type,
+      'Date': DateTime.now(),
+      'Note': note,
+      'Category': category,
+      'Pay_Method': method
+    }).then((value) {
+      DocumentReference balanceRef =
+          FirebaseFirestore.instance.collection('users').doc(uid);
       balanceRef.update({
-        'Income' : FieldValue.increment( (type=="Income") ? amount : 0),
-        'Expense' : FieldValue.increment( (type=="Expense") ? amount : 0),
+        'Income': FieldValue.increment((type == "Income") ? amount : 0),
+        'Expense': FieldValue.increment((type == "Expense") ? amount : 0),
       });
-        Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => HomeScreen()));
     });
     print("Added Expense Data");
   }

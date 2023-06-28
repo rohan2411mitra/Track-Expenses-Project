@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import '../../reusable_widgets/reuse.dart';
 import '../../utils/color_utils.dart';
+import 'AllTransactions.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -33,26 +34,33 @@ class _HomePageState extends State<HomePage> {
                 height: 325,
                 child: welcome(),
               ),
-              const Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 15),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Transactions History',
+                    const Text(
+                      'Latest Transactions',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        fontSize: 19,
+                        fontSize: 20,
                         color: Colors.white70,
                       ),
                     ),
-                    Text(
-                      'See all',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        color: Colors.grey,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Transactions()));
+                      },
+                      child: const Text(
+                        'See all',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: Color(0xFFFFFFCC),
+                        ),
                       ),
                     ),
                   ],
@@ -61,7 +69,13 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: SizedBox(
                   width: double.infinity,
-                  child: transactions(),
+                  child: transactions(
+                      FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(user.uid)
+                          .collection('expenses'),
+                      "Date",
+                      true),
                 ),
               )
             ],
@@ -71,104 +85,19 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget transactions() {
-    final CollectionReference expenses = FirebaseFirestore.instance.collection('users').doc(user.uid).collection('expenses');
-    return StreamBuilder(
-      stream: expenses.orderBy('Date', descending: true).snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(child: Text("Something Went Wrong! ${snapshot.error}"));
-        } else if (snapshot.hasData) {
-          final expenses = snapshot.data!;
-
-          if (expenses.docs.isEmpty){
-            return const Center(
-              child: Text(
-                "No Transaction added yet!",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-            );
-          }
-
-          else{
-          return ListView.builder(
-            itemCount: expenses.docs.length,
-            itemBuilder: (BuildContext context, int index) {
-              final DocumentSnapshot transaction = expenses.docs[index];
-
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: ListTile(
-
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                    textColor: Colors.black,
-                    leading: Image.asset(
-                      "assets/images/${transaction["Pay_Method"]}.png", height: 40),
-                    title: Text(
-                      transaction['Note'],
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'For ${transaction['Category']}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12
-                          ),
-                        ),
-                        Text(
-                        DateFormat('dd/MM/yyyy').format(transaction['Date'].toDate().toLocal()),
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                    trailing: Text(
-                      '\$ ${transaction["Amount"]}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 19,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ),
-                );
-            },
-          );
-          }
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
-  }
-
-
   Widget balance() {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(child: Text("Something Went Wrong! ${snapshot.error}"));
         } else if (snapshot.hasData) {
-          final incexp = snapshot.data!;
-          final inc=incexp['Income'];
-          final exp=incexp['Expense'];
+          final incExp = snapshot.data!;
+          final inc = incExp['Income'];
+          final exp = incExp['Expense'];
           return Column(
             children: [
               const SizedBox(
@@ -199,7 +128,9 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Expanded(
                     child: Text(
-                      (inc!=null && exp!=null) ? '\$ ${(inc-exp).toStringAsFixed(2)}' : "NA",
+                      (inc != null && exp != null)
+                          ? '\u{20B9} ${(inc - exp).toStringAsFixed(2)}'
+                          : "NA",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 25,
@@ -241,7 +172,7 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                     Row(
-                      children:[
+                      children: [
                         CircleAvatar(
                           radius: 14,
                           backgroundColor: Colors.red,
@@ -274,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                    inc!=null ? "\$ ${inc.toStringAsFixed(2)}" : "NA",
+                      inc != null ? "\u{20B9} ${inc.toStringAsFixed(2)}" : "NA",
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 17,
@@ -282,7 +213,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     Text(
-                      exp!=null ? "\$ ${exp.toStringAsFixed(2)}" : "NA",
+                      exp != null ? "\u{20B9} ${exp.toStringAsFixed(2)}" : "NA",
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 17,
@@ -294,7 +225,6 @@ class _HomePageState extends State<HomePage> {
               )
             ],
           );
-
         } else {
           return const Center(
             child: CircularProgressIndicator(),
@@ -342,17 +272,14 @@ class _HomePageState extends State<HomePage> {
           top: 135,
           left: 36,
           child: Container(
-              height: 175,
-              width: 320,
-              decoration: BoxDecoration(
-                  color: Colors.purple, borderRadius: BorderRadius.circular(14)),
-              child: balance(),
+            height: 175,
+            width: 320,
+            decoration: BoxDecoration(
+                color: Colors.purple, borderRadius: BorderRadius.circular(14)),
+            child: balance(),
           ),
         ),
       ],
     );
   }
-
-
 }
-
