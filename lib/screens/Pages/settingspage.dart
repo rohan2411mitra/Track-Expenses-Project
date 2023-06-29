@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:track_exp/screens/signin_screen.dart';
 import '../../utils/color_utils.dart';
@@ -14,6 +16,8 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   final user = FirebaseAuth.instance.currentUser!;
+  final ImagePicker _picker = ImagePicker();
+  XFile? _imageFile;
 
   @override
   Widget build(BuildContext context) {
@@ -30,64 +34,17 @@ class _SettingsPageState extends State<SettingsPage> {
           ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
           child: Column(
             children: [
-              Card(
-                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-                child: FutureBuilder(
-                  future: getUserJoiningDate(),
-                  builder: (context, snapshot) {
-                    DateTime joiningDate = snapshot.data ?? DateTime.now();
-                    if (snapshot.hasError) {
-                      return Center(
-                          child:
-                              Text("Something Went Wrong! ${snapshot.error}"));
-                    } else if (snapshot.hasData) {
-                      return ListTile(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5)),
-                        textColor: Colors.black,
-                        leading:
-                            Image.asset("assets/images/Person.png", height: 40),
-                        title: Text(
-                          user.displayName ?? "Unknown",
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w500),
-                        ),
-                        subtitle: Text(
-                          user.email ?? "---@---.com",
-                          style: const TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              "Joined On:-",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500, fontSize: 18),
-                            ),
-                            Text(
-                              DateFormat('dd/MM/yyyy').format(joiningDate),
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
-                ),
+              const SizedBox(
+                height: 10,
+              ),
+              profile(),
+              const SizedBox(
+                height: 10,
               ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Container(
-                  height: 220,
+                  height: 210,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.black54,
@@ -108,11 +65,16 @@ class _SettingsPageState extends State<SettingsPage> {
                             padding: EdgeInsets.symmetric(
                                 vertical: 5, horizontal: 2),
                             child: Text(
-                              "User Details",
+                              "Update Profile Pic",
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.w500),
                             ),
-                          )),
+                          ),
+                        onTap: (){showModalBottomSheet(
+                          context: context,
+                          builder: ((builder) => bottomSheet()),
+                        );},
+                      ),
                       ListTile(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5)),
@@ -257,4 +219,165 @@ class _SettingsPageState extends State<SettingsPage> {
     DateTime joiningDate = document['joiningDate'].toDate().toLocal();
     return joiningDate;
   }
+
+  Widget profile() {
+    return FutureBuilder(
+      future: getUserJoiningDate(),
+      builder: (context, snapshot) {
+        DateTime joiningDate = snapshot.data ?? DateTime.now();
+        if (snapshot.hasError) {
+          return Center(child: Text("Something Went Wrong! ${snapshot.error}"));
+        } else if (snapshot.hasData) {
+          return Column(children: [
+            const SizedBox(
+              height: 2,
+            ),
+            _imageFile==null ?
+            CircleAvatar(
+              radius: 64,
+              backgroundColor: Colors.white70,
+              child: Image.asset("assets/images/Person.png"),
+            ) :
+                CircleAvatar(
+                  radius: 64,
+                  backgroundColor: Colors.white70,
+                  backgroundImage: FileImage(File(_imageFile!.path)),
+                ),
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 10),
+              height: 110,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20), color: Colors.white),
+              child: Column(
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Name :",
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(
+                            width: 15,
+                          ),
+                          Text(
+                            user.displayName ?? "Unknown",
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w400),
+                          ),
+                        ]),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Email :",
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(
+                            width: 15,
+                          ),
+                          Text(
+                            user.email ?? "---@---.com",
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w400),
+                          ),
+                        ]),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Joined On :",
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(
+                            width: 15,
+                          ),
+                          Text(
+                            DateFormat('dd/MM/yyyy').format(joiningDate),
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w400),
+                          ),
+                        ]),
+                  )
+                ],
+              ),
+            )
+          ]);
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
+
+  Widget bottomSheet() {
+    return Container(
+      height: 90.0,
+      width: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 10,
+      ),
+      child: Column(
+        children: <Widget>[
+          Text(
+            "Choose Profile photo",
+            style: TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+            ElevatedButton.icon(
+              icon: Icon(Icons.camera),
+              onPressed: () {
+                takePhoto(ImageSource.camera);
+              },
+              label: Text("Camera"),
+            ),
+            const SizedBox(width: 20),
+            ElevatedButton.icon(
+              icon: Icon(Icons.image),
+              onPressed: () {
+                takePhoto(ImageSource.gallery);
+              },
+              label: Text("Gallery"),
+            ),
+          ])
+        ],
+      ),
+    );
+  }
+
+  void takePhoto(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(
+      source: source,
+    );
+    setState(() {
+      _imageFile = pickedFile;
+    });
+  }
+
 }

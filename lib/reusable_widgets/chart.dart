@@ -16,8 +16,6 @@ class Chart extends StatefulWidget {
 
 class _ChartState extends State<Chart> {
   final user = FirebaseAuth.instance.currentUser!;
-  final Timestamp timestamp =
-      Timestamp.fromDate(DateTime.now().subtract(Duration(days: 7)));
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +66,8 @@ class _ChartState extends State<Chart> {
                       doc['Amount']));
                 }
               }
+              expenses.sort((a, b) => a.date.compareTo(b.date));
+              income.sort((a, b) => a.date.compareTo(b.date));
 
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),

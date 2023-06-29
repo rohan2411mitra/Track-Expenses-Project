@@ -124,9 +124,9 @@ class _ShowExpensesState extends State<ShowExpenses> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Top 10 By Amount',
-                          style: TextStyle(
+                        Text(
+                          (_descending) ? 'Top 10 By Amount' : "Bottom 10 By Amount",
+                          style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 20,
                               color: Colors.white70),
