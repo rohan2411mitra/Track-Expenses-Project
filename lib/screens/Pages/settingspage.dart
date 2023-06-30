@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:track_exp/reusable_widgets/reuse.dart';
 import 'package:track_exp/screens/signin_screen.dart';
+import 'package:track_exp/utils/add_profile_image.dart';
 import '../../utils/color_utils.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -129,24 +131,19 @@ class _SettingsPageState extends State<SettingsPage> {
 
                           FirebaseAuth.instance
                               .signOut()
-                              .then((value) => Navigator.pushAndRemoveUntil(
+                              .then((value) {
+                            snackBar(context, "User Logged Out Successfully", "green");
+                                Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             const SignInScreen()),
                                     (route) => false,
-                                  ))
+                                  );})
                               .onError((error, stackTrace) {
                             String errorMessage =
                                 error.toString().split(']').last;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(errorMessage,
-                                    textAlign: TextAlign.center),
-                                duration: const Duration(seconds: 5),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
+                            snackBar(context, errorMessage, "red");
                             print("Error ${error.toString()}");
                             Navigator.of(context).pop();
                           });
@@ -199,12 +196,14 @@ class _SettingsPageState extends State<SettingsPage> {
 
             final DocumentReference balanceRef =
                 FirebaseFirestore.instance.collection('users').doc(user.uid);
-            balanceRef.update({
+            await balanceRef.update({
               'Income': 0,
               'Expense': 0,
+            }).then((value) {
+              snackBar(context, "User Transactions Data Erased!", "green");
             });
 
-            Navigator.of(context).pop();
+            if (context.mounted) Navigator.of(context).pop();
           },
         ),
       ],
@@ -232,12 +231,20 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(
               height: 2,
             ),
-            _imageFile==null ?
+            _imageFile==null ?(
+            user.photoURL==null ?
+                CircleAvatar(
+                  radius: 64,
+                  backgroundColor: Colors.white70,
+                  child: Image.asset("assets/images/Person.png"),
+                ) :
             CircleAvatar(
               radius: 64,
               backgroundColor: Colors.white70,
-              child: Image.asset("assets/images/Person.png"),
-            ) :
+              backgroundImage: NetworkImage(user.photoURL!),
+            )
+            )
+             :
                 CircleAvatar(
                   radius: 64,
                   backgroundColor: Colors.white70,
@@ -247,76 +254,80 @@ class _SettingsPageState extends State<SettingsPage> {
               height: 10,
             ),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 12),
               height: 110,
+              width: double.infinity,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20), color: Colors.white),
-              child: Column(
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            "Name :",
-                            style: TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.w700),
-                          ),
-                          const SizedBox(
-                            width: 15,
-                          ),
-                          Text(
-                            user.displayName ?? "Unknown",
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w400),
-                          ),
-                        ]),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            "Email :",
-                            style: TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.w700),
-                          ),
-                          const SizedBox(
-                            width: 15,
-                          ),
-                          Text(
-                            user.email ?? "---@---.com",
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w400),
-                          ),
-                        ]),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            "Joined On :",
-                            style: TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.w700),
-                          ),
-                          const SizedBox(
-                            width: 15,
-                          ),
-                          Text(
-                            DateFormat('dd/MM/yyyy').format(joiningDate),
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w400),
-                          ),
-                        ]),
-                  )
-                ],
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Name :",
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.w700),
+                            ),
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            Text(
+                              user.displayName ?? "Unknown",
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w400),
+                            ),
+                          ]),
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Email :",
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.w700),
+                            ),
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            Text(
+                              user.email ?? "---@---.com",
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w400),
+                            ),
+                          ]),
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Joined On :",
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.w700),
+                            ),
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            Text(
+                              DateFormat('dd/MM/yyyy').format(joiningDate),
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w400),
+                            ),
+                          ]),
+                    )
+                  ],
+                ),
               ),
             )
           ]);
@@ -333,37 +344,43 @@ class _SettingsPageState extends State<SettingsPage> {
     return Container(
       height: 90.0,
       width: MediaQuery.of(context).size.width,
-      margin: EdgeInsets.symmetric(
+      margin: const EdgeInsets.symmetric(
         horizontal: 20,
         vertical: 10,
       ),
       child: Column(
         children: <Widget>[
-          Text(
+          const Text(
             "Choose Profile photo",
             style: TextStyle(
               fontSize: 20.0,
               fontWeight: FontWeight.w700,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
             ElevatedButton.icon(
-              icon: Icon(Icons.camera),
+              icon: const Icon(Icons.camera),
               onPressed: () {
                 takePhoto(ImageSource.camera);
               },
-              label: Text("Camera"),
+              label: const Text("Camera"),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.blueGrey),
+              ),
             ),
             const SizedBox(width: 20),
             ElevatedButton.icon(
-              icon: Icon(Icons.image),
+              icon: const Icon(Icons.image),
               onPressed: () {
                 takePhoto(ImageSource.gallery);
               },
-              label: Text("Gallery"),
+              label: const Text("Gallery"),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.blueGrey),
+              ),
             ),
           ])
         ],
@@ -372,12 +389,26 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void takePhoto(ImageSource source) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) =>
+        const Center(child: CircularProgressIndicator()));
+
     final pickedFile = await _picker.pickImage(
       source: source,
     );
+
     setState(() {
       _imageFile = pickedFile;
     });
+
+    if (pickedFile != null){
+      await StoreData().saveData(file: File(pickedFile.path).readAsBytesSync());
+    }
+    // navigatorKey.currentState!.popUntil((route) => route.isFirst);
+    if (context.mounted) Navigator.of(context).pop();
+    if (context.mounted) Navigator.of(context).pop();
   }
 
 }

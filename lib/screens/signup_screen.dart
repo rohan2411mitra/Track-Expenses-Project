@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:track_exp/utils/color_utils.dart';
 import 'package:track_exp/reusable_widgets/reuse.dart';
 import 'package:track_exp/screens/home_screen.dart';
-import '../main.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -99,6 +98,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             'joiningDate': DateTime.now(),
                           };
                           userPayRef.set(data).then((value) {
+                            snackBar(context, "User Created Successfully", "green");
                             print("Created New Account");
                             Navigator.push(
                                 context,
@@ -112,17 +112,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         });
                       }).onError((error, stackTrace) {
                         String errorMessage = error.toString().split(']').last;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content:
-                                Text(errorMessage, textAlign: TextAlign.center),
-                            duration: const Duration(seconds: 5),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
+                        snackBar(context, errorMessage, "red");
                         print("Error ${error.toString()}");
-                        navigatorKey.currentState!
-                            .popUntil((route) => route.isFirst);
+                        Navigator.of(context).popUntil((route) => route.isFirst);
                       });
                     })
                   ],

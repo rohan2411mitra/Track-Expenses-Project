@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:track_exp/reusable_widgets/reuse.dart';
 import 'package:track_exp/screens/home_screen.dart';
 import '../../utils/color_utils.dart';
 import 'package:intl/intl.dart';
@@ -308,8 +309,8 @@ class _AddTransactionsState extends State<AddTransactions> {
   //Alert Dialog Box
   Widget _buildAlertDialog(BuildContext context) {
     return AlertDialog(
-      title: Text('Add Transaction'),
-      content: Text(
+      title: const Text('Add Transaction'),
+      content: const Text(
         'Are you sure you want to add the transaction ?',
         style: TextStyle(fontSize: 20),
       ),
@@ -329,12 +330,23 @@ class _AddTransactionsState extends State<AddTransactions> {
             style: TextStyle(fontSize: 16),
           ),
           onPressed: () {
-            addUserExpense(
-                double.parse(_amountController.text),
-                _type,
-                _noteController.text.trim(),
-                _selectedCategory,
-                _selectedMethod);
+            if (double.tryParse(_amountController.text)==null){
+              snackBar(context, "Amount must be a Valid Number", "red");
+              FocusScope.of(context).unfocus();
+              Navigator.of(context).pop();
+            } else if (_noteController.text.trim()==""){
+              snackBar(context, "Please enter some Note for Transaction", "red");
+              FocusScope.of(context).unfocus();
+              Navigator.of(context).pop();
+            }
+            else{
+              addUserExpense(
+                  double.parse(_amountController.text),
+                  _type,
+                  _noteController.text.trim(),
+                  _selectedCategory,
+                  _selectedMethod);
+            }
           },
         ),
       ],
@@ -373,8 +385,9 @@ class _AddTransactionsState extends State<AddTransactions> {
         'Income': FieldValue.increment((type == "Income") ? amount : 0),
         'Expense': FieldValue.increment((type == "Expense") ? amount : 0),
       });
+      snackBar(context, "Transaction Added Successfully", "green");
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomeScreen()));
+          context, MaterialPageRoute(builder: (context) => const HomeScreen()));
     });
     print("Added Expense Data");
   }

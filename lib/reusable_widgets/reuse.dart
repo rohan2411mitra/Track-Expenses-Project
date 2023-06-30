@@ -119,12 +119,17 @@ Card item(DocumentSnapshot transaction) {
               color: catColor(transaction["Category"]),
             ),
           ),
-          const SizedBox(width: 10),
-          Text(
-            transaction['Note'],
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+          const SizedBox(width: 8),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                transaction['Note'],
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
         ],
@@ -202,4 +207,14 @@ Widget transactions(
       }
     },
   );
+}
+
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBar(BuildContext context, String message, String color){
+  return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+    content: Text(message,
+        textAlign: TextAlign.center),
+    duration: const Duration(seconds: 4),
+    backgroundColor: (color=="red") ? Colors.red : Colors.green,
+  ));
 }

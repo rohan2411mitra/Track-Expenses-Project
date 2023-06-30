@@ -5,7 +5,6 @@ import 'package:track_exp/utils/color_utils.dart';
 import 'package:track_exp/reusable_widgets/reuse.dart';
 import 'package:track_exp/screens/signup_screen.dart';
 import 'package:track_exp/screens/home_screen.dart';
-import 'package:track_exp/main.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -43,15 +42,15 @@ class _SignInScreenState extends State<SignInScreen> {
                   children: <Widget>[
                     logoWidget("assets/images/Person.png"),
                     const SizedBox(
-                      height: 5,
+                      height: 10,
                     ),
-                    const Text('Welcome Back!',
+                    const Text('Login And Connect',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 32,
                             color: Colors.white)),
                     const SizedBox(
-                      height: 30,
+                      height: 28,
                     ),
                     reusableTextField("Enter Email", Icons.person_outline,
                         false, _emailTextController),
@@ -78,23 +77,16 @@ class _SignInScreenState extends State<SignInScreen> {
                               email: _emailTextController.text.trim(),
                               password: _passwordTextController.text.trim())
                           .then((value) {
+                        snackBar(context, "User Logged In Successfully!", "green");
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const HomeScreen()));
                       }).onError((error, stackTrace) {
                         String errorMessage = error.toString().split(']').last;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content:
-                                Text(errorMessage, textAlign: TextAlign.center),
-                            duration: const Duration(seconds: 5),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
+                        snackBar(context, errorMessage, "red");
                         print("Error ${error.toString()}");
-                        navigatorKey.currentState!
-                            .popUntil((route) => route.isFirst);
+                        Navigator.of(context).popUntil((route) => route.isFirst);
                       });
                     }),
                     GestureDetector(

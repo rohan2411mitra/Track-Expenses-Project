@@ -102,25 +102,17 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => Center(child: CircularProgressIndicator()));
+        builder: (context) => const Center(child: CircularProgressIndicator()));
 
     try {
       await FirebaseAuth.instance
-          .sendPasswordResetEmail(email: _emailTextController.text.trim());
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content:
-            Text("Password Reset Email Sent!", textAlign: TextAlign.center),
-        duration: Duration(seconds: 5),
-        backgroundColor: Colors.green,
-      ));
-      Navigator.of(context).pop();
+          .sendPasswordResetEmail(email: _emailTextController.text.trim())
+          .then((value) {
+              snackBar(context, "Password Reset Email Sent!", "green");
+              if (context.mounted) {Navigator.of(context).popUntil((route) => route.isFirst);}
+          });
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.message ?? "Some Error Occured!",
-            textAlign: TextAlign.center),
-        duration: Duration(seconds: 5),
-        backgroundColor: Colors.red,
-      ));
+      snackBar(context, e.message ?? "Some Error Occurred!", "red");
       print(e);
       Navigator.of(context).pop();
     }
