@@ -56,26 +56,28 @@ class _SettingsPageState extends State<SettingsPage> {
                     physics: const NeverScrollableScrollPhysics(),
                     children: <Widget>[
                       ListTile(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5)),
-                          textColor: Colors.white,
-                          trailing: const Icon(
-                            Icons.keyboard_arrow_right,
-                            color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5)),
+                        textColor: Colors.white,
+                        trailing: const Icon(
+                          Icons.keyboard_arrow_right,
+                          color: Colors.white,
+                        ),
+                        title: const Padding(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 5, horizontal: 2),
+                          child: Text(
+                            "Update Profile Pic",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w500),
                           ),
-                          title: const Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 2),
-                            child: Text(
-                              "Update Profile Pic",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                        onTap: (){showModalBottomSheet(
-                          context: context,
-                          builder: ((builder) => bottomSheet()),
-                        );},
+                        ),
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: ((builder) => bottomSheet()),
+                          );
+                        },
                       ),
                       ListTile(
                         shape: RoundedRectangleBorder(
@@ -129,18 +131,16 @@ class _SettingsPageState extends State<SettingsPage> {
                               builder: (context) => const Center(
                                   child: CircularProgressIndicator()));
 
-                          FirebaseAuth.instance
-                              .signOut()
-                              .then((value) {
-                            snackBar(context, "User Logged Out Successfully", "green");
-                                Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const SignInScreen()),
-                                    (route) => false,
-                                  );})
-                              .onError((error, stackTrace) {
+                          FirebaseAuth.instance.signOut().then((value) {
+                            snackBar(context, "User Logged Out Successfully",
+                                "green");
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const SignInScreen()),
+                              (route) => false,
+                            );
+                          }).onError((error, stackTrace) {
                             String errorMessage =
                                 error.toString().split(']').last;
                             snackBar(context, errorMessage, "red");
@@ -231,25 +231,23 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(
               height: 2,
             ),
-            _imageFile==null ?(
-            user.photoURL==null ?
-                CircleAvatar(
-                  radius: 64,
-                  backgroundColor: Colors.white70,
-                  child: Image.asset("assets/images/Person.png"),
-                ) :
-            CircleAvatar(
-              radius: 64,
-              backgroundColor: Colors.white70,
-              backgroundImage: NetworkImage(user.photoURL!),
-            )
-            )
-             :
-                CircleAvatar(
-                  radius: 64,
-                  backgroundColor: Colors.white70,
-                  backgroundImage: FileImage(File(_imageFile!.path)),
-                ),
+            _imageFile == null
+                ? (user.photoURL == null
+                    ? CircleAvatar(
+                        radius: 64,
+                        backgroundColor: Colors.white70,
+                        child: Image.asset("assets/images/Person.png"),
+                      )
+                    : CircleAvatar(
+                        radius: 64,
+                        backgroundColor: Colors.white70,
+                        backgroundImage: NetworkImage(user.photoURL!),
+                      ))
+                : CircleAvatar(
+                    radius: 64,
+                    backgroundColor: Colors.white70,
+                    backgroundImage: FileImage(File(_imageFile!.path)),
+                  ),
             const SizedBox(
               height: 10,
             ),
@@ -264,8 +262,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: Column(
                   children: [
                     Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 2),
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -285,8 +283,8 @@ class _SettingsPageState extends State<SettingsPage> {
                           ]),
                     ),
                     Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 2),
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -306,8 +304,8 @@ class _SettingsPageState extends State<SettingsPage> {
                           ]),
                     ),
                     Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 2),
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -368,7 +366,8 @@ class _SettingsPageState extends State<SettingsPage> {
               },
               label: const Text("Camera"),
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.blueGrey),
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.blueGrey),
               ),
             ),
             const SizedBox(width: 20),
@@ -379,7 +378,8 @@ class _SettingsPageState extends State<SettingsPage> {
               },
               label: const Text("Gallery"),
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.blueGrey),
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.blueGrey),
               ),
             ),
           ])
@@ -392,8 +392,7 @@ class _SettingsPageState extends State<SettingsPage> {
     showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) =>
-        const Center(child: CircularProgressIndicator()));
+        builder: (context) => const Center(child: CircularProgressIndicator()));
 
     final pickedFile = await _picker.pickImage(
       source: source,
@@ -403,12 +402,11 @@ class _SettingsPageState extends State<SettingsPage> {
       _imageFile = pickedFile;
     });
 
-    if (pickedFile != null){
+    if (pickedFile != null) {
       await StoreData().saveData(file: File(pickedFile.path).readAsBytesSync());
     }
     // navigatorKey.currentState!.popUntil((route) => route.isFirst);
     if (context.mounted) Navigator.of(context).pop();
     if (context.mounted) Navigator.of(context).pop();
   }
-
 }

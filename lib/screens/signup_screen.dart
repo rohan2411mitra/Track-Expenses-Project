@@ -98,7 +98,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             'joiningDate': DateTime.now(),
                           };
                           userPayRef.set(data).then((value) {
-                            snackBar(context, "User Created Successfully", "green");
+                            snackBar(
+                                context, "User Created Successfully", "green");
                             print("Created New Account");
                             Navigator.push(
                                 context,
@@ -114,7 +115,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         String errorMessage = error.toString().split(']').last;
                         snackBar(context, errorMessage, "red");
                         print("Error ${error.toString()}");
-                        Navigator.of(context).popUntil((route) => route.isFirst);
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
                       });
                     })
                   ],

@@ -26,6 +26,7 @@ class _ChartState extends State<Chart> {
     return StreamBuilder(
         stream: expensesRef
             .where(widget.method, isEqualTo: widget.sortBy)
+            .orderBy("Date", descending: false)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -56,39 +57,38 @@ class _ChartState extends State<Chart> {
               for (var doc in transactions.docs) {
                 if (doc['Payment_Type'] == "Income") {
                   income.add(ExpensesData(
-                      DateFormat('dd/MM/yy')
-                          .format(doc['Date'].toDate().toLocal()),
-                      doc['Amount']));
+                      doc['Date'].toDate().toLocal(), doc['Amount']));
                 } else {
                   expenses.add(ExpensesData(
-                      DateFormat('dd/MM/yy')
-                          .format(doc['Date'].toDate().toLocal()),
-                      doc['Amount']));
+                      doc['Date'].toDate().toLocal(), doc['Amount']));
                 }
               }
-              expenses.sort((a, b) => a.date.compareTo(b.date));
-              income.sort((a, b) => a.date.compareTo(b.date));
 
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: SizedBox(
                   width: double.infinity,
                   height: 220,
                   child: SfCartesianChart(
-                    margin: const EdgeInsets.fromLTRB(2, 6, 2, 0),
-                    backgroundColor: Colors.white,
-                    primaryXAxis: CategoryAxis(
-                        title: AxisTitle(
-                            text: "Date",
-                            textStyle: const TextStyle(
-                                fontSize: 10, fontWeight: FontWeight.bold))),
+                    margin: const EdgeInsets.symmetric(horizontal: 2),
+                    backgroundColor: Colors.white70,
+                    borderColor: Colors.black,
+                    borderWidth: 1.4,
+                    primaryXAxis: DateTimeAxis(
+                        rangePadding: ChartRangePadding.round,
+                        majorGridLines:
+                            const MajorGridLines(color: Colors.blueGrey),
+                        maximumLabels: 2,
+                        dateFormat: DateFormat('dd, MMM, yy'),
+                        desiredIntervals: 5,
+                        edgeLabelPlacement: EdgeLabelPlacement.shift),
                     primaryYAxis: NumericAxis(
-                        title: AxisTitle(
-                            text: "Amount ( In \u{20B9} )",
-                            textStyle: const TextStyle(
-                                fontSize: 10, fontWeight: FontWeight.bold))),
-                    series: <LineSeries<ExpensesData, String>>[
-                      LineSeries<ExpensesData, String>(
+                        rangePadding: ChartRangePadding.auto,
+                        majorGridLines:
+                            const MajorGridLines(color: Colors.blueGrey),
+                        labelFormat: '\u{20B9} {value}'),
+                    series: <LineSeries<ExpensesData, DateTime>>[
+                      LineSeries<ExpensesData, DateTime>(
                         name: 'Income',
                         color: Colors.green,
                         width: 3,
@@ -101,7 +101,7 @@ class _ChartState extends State<Chart> {
                                 .greenAccent // set this to 'true' to hide the marker
                             ),
                       ),
-                      LineSeries<ExpensesData, String>(
+                      LineSeries<ExpensesData, DateTime>(
                         name: 'Expenses',
                         color: Colors.red,
                         width: 3,
@@ -134,6 +134,6 @@ class _ChartState extends State<Chart> {
 
 class ExpensesData {
   ExpensesData(this.date, this.amount);
-  String date;
+  DateTime date;
   double amount;
 }

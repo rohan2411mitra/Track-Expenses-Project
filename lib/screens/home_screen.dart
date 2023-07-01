@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
           elevation: 0,
           title: Text(
             pages[_selectedIndex],
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(

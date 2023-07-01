@@ -77,7 +77,8 @@ class _SignInScreenState extends State<SignInScreen> {
                               email: _emailTextController.text.trim(),
                               password: _passwordTextController.text.trim())
                           .then((value) {
-                        snackBar(context, "User Logged In Successfully!", "green");
+                        snackBar(
+                            context, "User Logged In Successfully!", "green");
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -86,7 +87,8 @@ class _SignInScreenState extends State<SignInScreen> {
                         String errorMessage = error.toString().split(']').last;
                         snackBar(context, errorMessage, "red");
                         print("Error ${error.toString()}");
-                        Navigator.of(context).popUntil((route) => route.isFirst);
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
                       });
                     }),
                     GestureDetector(

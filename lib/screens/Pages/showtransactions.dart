@@ -53,7 +53,7 @@ class _ShowExpensesState extends State<ShowExpenses> {
                     height: 12,
                   ),
                   const Text(
-                    'Statistics',
+                    'Day Wise Statistics',
                     style: TextStyle(
                         color: Color(0xFFFFFFCC),
                         fontSize: 20,
@@ -125,7 +125,9 @@ class _ShowExpensesState extends State<ShowExpenses> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          (_descending) ? 'Top 10 By Amount' : "Bottom 10 By Amount",
+                          (_descending)
+                              ? 'Top 10 By Amount'
+                              : "Bottom 10 By Amount",
                           style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 20,

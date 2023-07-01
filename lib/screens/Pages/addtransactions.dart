@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:track_exp/reusable_widgets/reuse.dart';
 import 'package:track_exp/screens/home_screen.dart';
 import '../../utils/color_utils.dart';
-import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -16,11 +16,13 @@ class AddTransactions extends StatefulWidget {
 class _AddTransactionsState extends State<AddTransactions> {
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
+  final _dateController = TextEditingController();
   final categories = ["Work", "Personal", "Transport", "Food"];
   final methods = ["Cash", "Card", "Online", "Bank"];
   String _selectedCategory = "Work";
   String _selectedMethod = "Cash";
   String _type = "Income";
+  DateTime _enteredDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +139,7 @@ class _AddTransactionsState extends State<AddTransactions> {
                               _type = value.toString();
                             });
                           },
+                          activeColor: Colors.white,
                         ),
                         RadioListTile(
                           value: "Expense",
@@ -150,6 +153,7 @@ class _AddTransactionsState extends State<AddTransactions> {
                               _type = value.toString();
                             });
                           },
+                          activeColor: Colors.white,
                         ),
                       ],
                     )),
@@ -194,11 +198,19 @@ class _AddTransactionsState extends State<AddTransactions> {
                     width: 180,
                     child: TextField(
                       decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: DateFormat('dd/MM/yyyy')
-                              .format(DateTime.now().toLocal()),
-                          hintStyle: const TextStyle(color: Colors.white)),
-                      enabled: false,
+                        icon: const Icon(
+                          Icons.calendar_today,
+                          color: Colors.white,
+                        ),
+                        border: InputBorder.none,
+                        hintText: DateFormat('dd/MM/yy')
+                            .format(DateTime.now().toLocal()),
+                        hintStyle: const TextStyle(color: Colors.white70),
+                      ),
+                      readOnly: true,
+                      onTap: datePick,
+                      cursorColor: Colors.white,
+                      controller: _dateController,
                       style:
                           const TextStyle(fontSize: 20.0, color: Colors.white),
                     )),
@@ -306,6 +318,23 @@ class _AddTransactionsState extends State<AddTransactions> {
     );
   }
 
+  void datePick() async {
+    DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(), //get today's date
+        firstDate: DateTime(
+            2000), //DateTime.now() - not to allow to choose before today.
+        lastDate: DateTime.now());
+    if (pickedDate != null) {
+      print("picked date =$pickedDate");
+      setState(() {
+        _dateController.text =
+            DateFormat('dd/MM/yy').format(pickedDate.toLocal());
+        _enteredDate = pickedDate;
+      });
+    }
+  }
+
   //Alert Dialog Box
   Widget _buildAlertDialog(BuildContext context) {
     return AlertDialog(
@@ -330,20 +359,21 @@ class _AddTransactionsState extends State<AddTransactions> {
             style: TextStyle(fontSize: 16),
           ),
           onPressed: () {
-            if (double.tryParse(_amountController.text)==null){
+            if (double.tryParse(_amountController.text) == null) {
               snackBar(context, "Amount must be a Valid Number", "red");
               FocusScope.of(context).unfocus();
               Navigator.of(context).pop();
-            } else if (_noteController.text.trim()==""){
-              snackBar(context, "Please enter some Note for Transaction", "red");
+            } else if (_noteController.text.trim() == "") {
+              snackBar(
+                  context, "Please enter some Note for Transaction", "red");
               FocusScope.of(context).unfocus();
               Navigator.of(context).pop();
-            }
-            else{
+            } else {
               addUserExpense(
                   double.parse(_amountController.text),
                   _type,
                   _noteController.text.trim(),
+                  _enteredDate,
                   _selectedCategory,
                   _selectedMethod);
             }
@@ -355,7 +385,7 @@ class _AddTransactionsState extends State<AddTransactions> {
 
   //Add data to Firebase function
   Future<void> addUserExpense(double amount, String type, String note,
-      String category, String method) async {
+      DateTime datetime, String category, String method) async {
     User? user = FirebaseAuth.instance.currentUser;
     String? uid = user?.uid;
 
@@ -374,7 +404,7 @@ class _AddTransactionsState extends State<AddTransactions> {
     await expensesRef.set({
       'Amount': double.parse(amount.toStringAsFixed(2)),
       'Payment_Type': type,
-      'Date': DateTime.now(),
+      'Date': datetime,
       'Note': note,
       'Category': category,
       'Pay_Method': method

@@ -209,12 +209,11 @@ Widget transactions(
   );
 }
 
-ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBar(BuildContext context, String message, String color){
-  return ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-    content: Text(message,
-        textAlign: TextAlign.center),
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBar(
+    BuildContext context, String message, String color) {
+  return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text(message, textAlign: TextAlign.center),
     duration: const Duration(seconds: 4),
-    backgroundColor: (color=="red") ? Colors.red : Colors.green,
+    backgroundColor: (color == "red") ? Colors.red : Colors.green,
   ));
 }
