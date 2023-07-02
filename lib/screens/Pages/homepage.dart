@@ -253,10 +253,10 @@ class _HomePageState extends State<HomePage> {
                 height: 10,
               ),
               const Text(
-                "Welcome Back!",
+                "Here is your summary",
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 32.0,
+                    fontSize: 31.6,
                     color: Colors.white70),
               ),
               Text(
