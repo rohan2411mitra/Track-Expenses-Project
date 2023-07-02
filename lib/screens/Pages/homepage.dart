@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                         'Total Balance',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
-                          fontSize: 20,
+                          fontSize: 24,
                           color: Colors.orangeAccent,
                         ),
                         textAlign: TextAlign.center,
@@ -125,25 +125,26 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(
                 height: 5,
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
                       (inc != null && exp != null)
                           ? '\u{20B9} ${(inc - exp).toStringAsFixed(2)}'
                           : "NA",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 25,
+                        fontSize: 26,
                         color: Colors.white,
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(
-                height: 28,
+                height: 24,
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15),
@@ -156,7 +157,7 @@ class _HomePageState extends State<HomePage> {
                           "Income",
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
-                            fontSize: 18,
+                            fontSize: 22,
                             color: Colors.lime,
                           ),
                         ),
@@ -188,7 +189,7 @@ class _HomePageState extends State<HomePage> {
                           "Expenses",
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
-                            fontSize: 18,
+                            fontSize: 22,
                             color: Colors.redAccent,
                           ),
                         ),
@@ -202,26 +203,38 @@ class _HomePageState extends State<HomePage> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      inc != null ? "\u{20B9} ${inc.toStringAsFixed(2)}" : "NA",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 17,
-                        color: Colors.white,
+                child: SizedBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            inc != null ? "\u{20B9} ${inc.toStringAsFixed(2)}" : "NA",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 17.6,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    Text(
-                      exp != null ? "\u{20B9} ${exp.toStringAsFixed(2)}" : "NA",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 17,
-                        color: Colors.white,
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            exp != null ? "\u{20B9} ${exp.toStringAsFixed(2)}" : "NA",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 17.6,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               )
             ],
