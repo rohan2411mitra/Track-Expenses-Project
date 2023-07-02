@@ -203,38 +203,36 @@ class _HomePageState extends State<HomePage> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: SizedBox(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            inc != null ? "\u{20B9} ${inc.toStringAsFixed(2)}" : "NA",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 17.6,
-                              color: Colors.white,
-                            ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          inc != null ? "\u{20B9} ${inc.toStringAsFixed(2)}" : "NA",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 17.6,
+                            color: Colors.white,
                           ),
                         ),
                       ),
-                      Flexible(
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            exp != null ? "\u{20B9} ${exp.toStringAsFixed(2)}" : "NA",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 17.6,
-                              color: Colors.white,
-                            ),
+                    ),
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          exp != null ? "\u{20B9} ${exp.toStringAsFixed(2)}" : "NA",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 17.6,
+                            color: Colors.white,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               )
             ],
