@@ -40,7 +40,7 @@ class _ShowExpensesState extends State<ShowExpenses> {
             child: Stack(children: [
               Container(
                 width: double.infinity,
-                height: 388,
+                height: 408,
                 decoration: const BoxDecoration(
                     color: Colors.lightBlueAccent,
                     borderRadius: BorderRadius.only(
@@ -50,7 +50,7 @@ class _ShowExpensesState extends State<ShowExpenses> {
               Column(
                 children: [
                   const SizedBox(
-                    height: 12,
+                    height: 10,
                   ),
                   const Text(
                     'Day Wise Statistics',
@@ -78,8 +78,8 @@ class _ShowExpensesState extends State<ShowExpenses> {
                                 });
                               },
                               child: Container(
-                                height: indexColor == index ? 50 : 40,
-                                width: indexColor == index ? 180 : 140,
+                                height: indexColor == index ? 46 : 38,
+                                width: indexColor == index ? 180 : 144,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
                                   color: indexColor == index
@@ -109,16 +109,13 @@ class _ShowExpensesState extends State<ShowExpenses> {
                   else
                     paymentButtons(),
                   const SizedBox(
-                    height: 10,
+                    height: 8,
                   ),
                   Chart(
                       method: sets[indexColor],
                       sortBy: (indexColor == 0)
                           ? catOption[catIndexColor]
                           : payOption[payIndexColor]),
-                  const SizedBox(
-                    height: 8,
-                  ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(15, 0, 8, 0),
                     child: Row(
@@ -182,8 +179,8 @@ class _ShowExpensesState extends State<ShowExpenses> {
                   });
                 },
                 child: Container(
-                  height: catIndexColor == index ? 40 : 30,
-                  width: catIndexColor == index ? 90 : 82,
+                  height: catIndexColor == index ? 38 : 30,
+                  width: catIndexColor == index ? 92 : 82,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     color: catIndexColor == index

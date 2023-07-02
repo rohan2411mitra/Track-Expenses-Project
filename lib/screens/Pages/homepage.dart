@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               SizedBox(
-                height: 325,
+                height: 326,
                 child: welcome(),
               ),
               Padding(
@@ -66,6 +66,7 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
+              const SizedBox(height: 5,),
               Expanded(
                 child: SizedBox(
                   width: double.infinity,
@@ -156,7 +157,7 @@ class _HomePageState extends State<HomePage> {
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 18,
-                            color: Colors.greenAccent,
+                            color: Colors.lime,
                           ),
                         ),
                         SizedBox(width: 7),

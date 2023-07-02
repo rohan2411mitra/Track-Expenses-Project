@@ -100,7 +100,7 @@ MaterialColor catColor(String input) {
 
 Card item(DocumentSnapshot transaction) {
   return Card(
-    margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(20.0),
     ),
