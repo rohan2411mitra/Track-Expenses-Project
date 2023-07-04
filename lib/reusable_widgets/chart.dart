@@ -36,7 +36,7 @@ class _ChartState extends State<Chart> {
             final transactions = snapshot.data!;
             if (transactions.docs.isEmpty) {
               return const SizedBox(
-                height: 216,
+                height: 252,
                 width: double.infinity,
                 child: Center(
                   child: Text(
