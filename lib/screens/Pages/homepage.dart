@@ -248,6 +248,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget welcome() {
     return Stack(
+      alignment: Alignment.topCenter,
       children: [
         Container(
           width: double.infinity,
@@ -282,10 +283,9 @@ class _HomePageState extends State<HomePage> {
         ),
         Positioned(
           top: 135,
-          left: 36,
           child: Container(
             height: 175,
-            width: 320,
+            width: MediaQuery.of(context).size.width*0.9,
             decoration: BoxDecoration(
                 color: Colors.purple, borderRadius: BorderRadius.circular(14)),
             child: balance(),

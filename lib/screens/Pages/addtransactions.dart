@@ -43,6 +43,7 @@ class _AddTransactionsState extends State<AddTransactions> {
                 child: SizedBox(
                   height: 590,
                   child: Stack(
+                    alignment: Alignment.topCenter,
                     children: [
                       Container(
                         width: double.infinity,
@@ -63,7 +64,7 @@ class _AddTransactionsState extends State<AddTransactions> {
                           ),
                         ),
                       ),
-                      Positioned(top: 135, left: 14, child: form()),
+                      Positioned(top: 135, child: form()),
                     ],
                   ),
                 ),
@@ -76,7 +77,7 @@ class _AddTransactionsState extends State<AddTransactions> {
   //Input Fields
   Widget form() {
     return Container(
-      width: 365,
+      width: MediaQuery.of(context).size.width*0.96,
       height: 435,
       decoration: BoxDecoration(
           color: Colors.pink, borderRadius: BorderRadius.circular(14)),
@@ -338,7 +339,7 @@ class _AddTransactionsState extends State<AddTransactions> {
   //Alert Dialog Box
   Widget _buildAlertDialog(BuildContext context) {
     return AlertDialog(
-      title: const Text('Add Transaction'),
+      title: const Text('Add Transaction',style: TextStyle(fontWeight: FontWeight.w600),),
       content: const Text(
         'Are you sure you want to add the transaction ?',
         style: TextStyle(fontSize: 20),

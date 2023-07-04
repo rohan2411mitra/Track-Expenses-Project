@@ -71,6 +71,7 @@ class _ChartState extends State<Chart> {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(
                       width: double.infinity,

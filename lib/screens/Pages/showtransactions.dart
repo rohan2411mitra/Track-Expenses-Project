@@ -172,32 +172,35 @@ class _ShowExpensesState extends State<ShowExpenses> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           ...List.generate(4, (index) {
-            return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    catIndexColor = index;
-                  });
-                },
-                child: Container(
-                  height: catIndexColor == index ? 38 : 30,
-                  width: catIndexColor == index ? 92 : 82,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: catIndexColor == index
-                        ? Colors.indigo
-                        : Colors.blueGrey,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    catOption[index],
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: catIndexColor == index ? 16 : 14,
-                        fontWeight: catIndexColor == index
-                            ? FontWeight.w700
-                            : FontWeight.w500),
-                  ),
-                ));
+            return Flexible(
+              flex: 1,
+              child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      catIndexColor = index;
+                    });
+                  },
+                  child: Container(
+                    height: catIndexColor == index ? 38 : 30,
+                    width: catIndexColor == index ? 92 : 82,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: catIndexColor == index
+                          ? Colors.indigo
+                          : Colors.blueGrey,
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      catOption[index],
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: catIndexColor == index ? 16 : 14,
+                          fontWeight: catIndexColor == index
+                              ? FontWeight.w700
+                              : FontWeight.w500),
+                    ),
+                  )),
+            );
           })
         ],
       ),
@@ -211,32 +214,35 @@ class _ShowExpensesState extends State<ShowExpenses> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           ...List.generate(4, (index) {
-            return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    payIndexColor = index;
-                  });
-                },
-                child: Container(
-                  height: payIndexColor == index ? 40 : 30,
-                  width: payIndexColor == index ? 90 : 80,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: payIndexColor == index
-                        ? Colors.indigo
-                        : Colors.blueGrey,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    payOption[index],
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: payIndexColor == index ? 16 : 14,
-                        fontWeight: payIndexColor == index
-                            ? FontWeight.w700
-                            : FontWeight.w500),
-                  ),
-                ));
+            return Flexible(
+              flex: 1,
+              child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      payIndexColor = index;
+                    });
+                  },
+                  child: Container(
+                    height: payIndexColor == index ? 38 : 30,
+                    width: payIndexColor == index ? 92 : 82,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: payIndexColor == index
+                          ? Colors.indigo
+                          : Colors.blueGrey,
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      payOption[index],
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: payIndexColor == index ? 16 : 14,
+                          fontWeight: payIndexColor == index
+                              ? FontWeight.w700
+                              : FontWeight.w500),
+                    ),
+                  )),
+            );
           })
         ],
       ),

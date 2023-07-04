@@ -162,7 +162,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildAlertDialog(BuildContext context) {
     return AlertDialog(
-      title: const Text('Erase All Data'),
+      title: const Text('Erase All Data',style: TextStyle(fontWeight: FontWeight.w600)),
       content: const Text(
         'Are you sure you want to delete all transaction history ?',
         style: TextStyle(fontSize: 20),
