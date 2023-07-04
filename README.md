@@ -14,16 +14,3 @@ After cloning the repo, navigate to project directory in android studio and :-
 4. If you want to delete all transaction history you can go to settings and erase all data
 5. You can logout from the settings page and change your display picture as well
 6. If you forget your password you can reset password from login screen and a mail will be sent to your registered Email Id
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
